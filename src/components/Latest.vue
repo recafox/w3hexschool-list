@@ -83,6 +83,7 @@ export default {
     };
   },
   methods: {
+    //取得最新的五筆
     latestFive() {
       const vm = this;
       let five = [];

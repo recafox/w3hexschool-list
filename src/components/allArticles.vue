@@ -157,7 +157,7 @@ export default {
   },
  
   mounted() {
-    console.log('all mounted');
+    
     const vm = this;
     const url =
       "https://raw.githubusercontent.com/hexschool/w3hexschool-API/master/data.json?fbclid=IwAR11uWoLrSLDYPYXv2PH5f1StWmFo4EmyjCKbOfUx5GCa3YTldwF_rJxL5Q";

@@ -164,10 +164,7 @@ export default {
        let str = JSON.stringify(vm.likePost);
       localStorage.setItem('likePost', str);
     },
-    updateStorage(item,title){
-      let str = JSON.stringify(item);
-      localStorage.setItem(title, str);
-    }
+
   },
   computed: {},
   mounted() {

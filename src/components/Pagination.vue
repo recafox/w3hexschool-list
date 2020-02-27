@@ -20,10 +20,12 @@ export default {
     }
   },
   methods:{
+    //前往指定頁面
     goto(){
       const vm = this;
       vm.$emit('gotoPage', vm.targetPage);
     },
+    //前往上一頁
     goPrev(){
       const vm = this;
       if(vm.targetPage >1){
@@ -31,6 +33,7 @@ export default {
       vm.targetPage = newPage;
       vm.$emit('gotoPage', newPage);}
     },
+    //前往下一頁
     goNext(){
       const vm = this;
       if(vm.targetPage < vm.totalPages){

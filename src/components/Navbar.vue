@@ -44,6 +44,7 @@ import $ from 'jquery';
 export default {
   name:'Navbar',
   methods:{
+    //小動畫切換
     openBar(){
       $('.navbar-toggler').toggleClass('show');
     }

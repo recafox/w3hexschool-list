@@ -38,6 +38,7 @@ export default {
 
   },
   computed: {
+    //讓收藏文章能以時間降冪的排序呈現
     reverse:function(){
       const vm = this;
       let reversed = vm.likePost.reverse();

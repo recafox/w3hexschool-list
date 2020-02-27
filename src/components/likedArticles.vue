@@ -45,6 +45,7 @@ export default {
     }
   },
   methods:{
+    //移除
     remove(item){
       const vm = this;
       for(let i=0; i<vm.likedPost.length; i++){
@@ -68,7 +69,7 @@ export default {
     const vm = this;
     let str = JSON.parse(localStorage.getItem('likePost'));
     vm.likedPost = str;
-
+    //計算總頁數
     vm.displayPosts = vm.likedPost;
     vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
 

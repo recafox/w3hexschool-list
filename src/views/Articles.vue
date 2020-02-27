@@ -43,6 +43,7 @@ export default {
     }
   },
   methods:{
+    //切換呈現頁面
     changeView(index){
       const vm = this;
       if(index === 0){

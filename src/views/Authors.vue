@@ -159,6 +159,7 @@ export default {
       //console.log(page);
       this.currentPage = page;
     },
+    //關鍵字篩選
     filter(text) {
       const vm = this;
       vm.filterText = text;
@@ -187,6 +188,7 @@ export default {
     }
   },
   computed: {
+    //根據index決定目前要呈現那些資料
     showCurrentPage: function() {
       /*currentPage = 1 1~12 
         currentPage = 2 13~25
