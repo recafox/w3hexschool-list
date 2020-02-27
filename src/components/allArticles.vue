@@ -11,8 +11,8 @@
             <p class="mt-3">{{item.name}}</p>
           </a>
         </div>
-        <button class='like-btn ml-auto' @click="like(item)">
-          <i v-if="item.posts.marked" class="fas fa-heart" style='color:red'></i>
+        <button class="like-btn ml-auto" @click="like(item)">
+          <i v-if="item.posts.marked" class="fas fa-heart" style="color:red"></i>
           <i v-else class="far fa-heart"></i>
         </button>
       </li>
@@ -41,11 +41,10 @@ export default {
       totalPages: 0, //全部頁數
       filterText: "",
       displayPosts: [],
-      likePost: JSON.parse(localStorage.getItem("likePost")) || [],
+      likePost: JSON.parse(localStorage.getItem("likePost")) || []
     };
   },
   methods: {
-
     //2020/2/18 下午 7:49:36 -> 1582026576
     convertTime(item) {
       let rawStr = item.updateTime;
@@ -82,7 +81,9 @@ export default {
       if (vm.filterText != "") {
         let arr = [];
         vm.allPosts.forEach(item => {
-          if (item.posts.title.toLowerCase().includes(vm.filterText.toLowerCase())) {
+          if (
+            item.posts.title.toLowerCase().includes(vm.filterText.toLowerCase())
+          ) {
             arr.push(item);
           }
         });
@@ -96,43 +97,44 @@ export default {
       }
     },
     like(item) {
-      const vm = this;    
+      const vm = this;
       vm.allPosts.forEach(post => {
-        if (post.posts.title === item.posts.title && post.posts.marked === false) {
+        if (
+          post.posts.title === item.posts.title &&
+          post.posts.marked === false
+        ) {
           post.posts.marked = true;
           let obj = {
-            name:item.name,
-            title:item.posts.title,
-            url:item.posts.url
+            name: item.name,
+            title: item.posts.title,
+            url: item.posts.url
           };
           vm.likePost.push(obj);
-         
-         
-        }else if(post.posts.title === item.posts.title && post.posts.marked === true){
+        } else if (
+          post.posts.title === item.posts.title &&
+          post.posts.marked === true
+        ) {
           post.posts.marked = false;
-          for(let x =0; x<vm.likePost.length; x++){
-            if(vm.likePost[x].title === item.posts.title){
+          for (let x = 0; x < vm.likePost.length; x++) {
+            if (vm.likePost[x].title === item.posts.title) {
               vm.likePost.splice(x, 1);
             }
           }
-          
         }
       });
       let arr = JSON.stringify(vm.likePost);
-      localStorage.setItem('likePost', arr);
+      localStorage.setItem("likePost", arr);
       //vm.syncLike();
-      
     },
-    syncLike(){
+    syncLike() {
       const vm = this;
-      for(let i=0; i<vm.allPosts.length; i++){
-        for(let y=0; y<vm.likePost.length; y++){
-          if(vm.allPosts[i].posts.title === vm.likePost[y].title){
+      for (let i = 0; i < vm.allPosts.length; i++) {
+        for (let y = 0; y < vm.likePost.length; y++) {
+          if (vm.allPosts[i].posts.title === vm.likePost[y].title) {
             vm.allPosts[i].posts.marked = true;
           }
         }
       }
-      
     }
   },
   computed: {
@@ -152,12 +154,10 @@ export default {
         }
       }
       return display;
-    },
-
+    }
   },
- 
+
   mounted() {
-    
     const vm = this;
     const url =
       "https://raw.githubusercontent.com/hexschool/w3hexschool-API/master/data.json?fbclid=IwAR11uWoLrSLDYPYXv2PH5f1StWmFo4EmyjCKbOfUx5GCa3YTldwF_rJxL5Q";
@@ -165,7 +165,7 @@ export default {
       .then(res => {
         return res.json();
       })
-      .then(data => {      
+      .then(data => {
         //設定資料初始狀態
         data.forEach(item => {
           item.timeStamp = vm.convertTime(item);
@@ -203,7 +203,7 @@ export default {
         vm.displayPosts = vm.allPosts;
         vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
 
-       // localStorage.clear();
+        // localStorage.clear();
       });
   }
 };
@@ -212,6 +212,7 @@ export default {
 
 
 <style lang="scss" scoped>
+
 ul {
   padding: 1rem;
   list-style: none;
@@ -225,7 +226,8 @@ ul {
     padding: 1rem;
     display: flex;
 
-    .like-btn{
+    .like-btn {
+      -webkit-appearance:none;
       width: 44px;
       height: 44px;
       border: 2px solid black;

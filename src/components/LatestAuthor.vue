@@ -58,7 +58,7 @@
               <tbody>
                 <tr v-for="(item,key) in tempModal.blogList" :key="item+key">
                   <td>
-                    <a :href="item.url" style="color:black">{{item.title}}</a>
+                    <a :href="item.url" target='_blank' style="color:black">{{item.title}}</a>
                   </td>
                   <td>
                     <button class='like-button' v-if='item.marked' @click.prevent="addToLike(item.title, item.url, tempModal.name)">

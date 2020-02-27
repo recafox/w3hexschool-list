@@ -62,6 +62,7 @@ export default {
   justify-content: center;
 
   select{
+    -webkit-appearance:none;
     padding: 0 1rem;
   }
 
@@ -70,6 +71,7 @@ export default {
   }
 
   .btn{
+    -webkit-appearance:none;
     width: 44px;
     height:44px;
     background: black;

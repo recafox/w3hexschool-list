@@ -272,6 +272,7 @@ a {
       color: white;
       
       .author-btn {
+        -webkit-appearance:none;
         border: none;
         padding: 0 1rem;
         border-radius: 0.5rem;
@@ -315,6 +316,7 @@ a {
   .outer-container ul li {
     width: 47%;
     .author-btn{
+      -webkit-appearance:none;
       padding:0.5rem 1rem;
     }
   }
