@@ -1,6 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import 'bootstrap'; //為了使用bootstrap的套件
+import VueCarousel from 'vue-carousel';
+import $ from 'jquery';
+
+Vue.use(VueCarousel);
 
 Vue.config.productionTip = false
 

@@ -7,9 +7,18 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@popperjs/core": "^2.0.6",
+    "bootstrap": "^4.4.1",
     "core-js": "^3.6.4",
+    "jquery": "^3.4.1",
+    "node-sass": "^4.13.1",
+    "popper.js": "^1.16.1",
+    "sass-loader": "^8.0.2",
+    "save": "^2.4.0",
     "vue": "^2.6.11",
-    "vue-router": "^3.1.5"
+    "vue-carousel": "^0.18.0",
+    "vue-router": "^3.1.5",
+    "vue-slick-carousel": "^1.0.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.2.0",
