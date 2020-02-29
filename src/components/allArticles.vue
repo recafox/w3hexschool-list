@@ -45,6 +45,19 @@ export default {
     };
   },
   methods: {
+    bubble(ary) {
+      for (var i = 0; i < ary.length; i++) {
+        for (var j = 0; j < ary.length - i - 1; j++) {
+          if (ary[j].timeStamp < ary[j + 1].timeStamp) {
+            var temp = ary[j];
+            ary[j] = ary[j + 1];
+            ary[j + 1] = temp;
+          }
+        }
+      }
+
+      return ary;
+    },
     //2020/2/18 下午 7:49:36 -> 1582026576
     convertTime(item) {
       let rawStr = item.updateTime;
@@ -178,11 +191,12 @@ export default {
           };
         });
         //時間新->舊排序
-        let latestArr = data.sort((a, b) => {
-          //降冪
-          return b.timeStamp - a.timeStamp;
-        });
-        data = latestArr;
+        vm.bubble(data);
+        // let latestArr = data.sort((a, b) => {
+        //   //降冪
+        //   return parseInt(b.timeStamp) - parseInt(a.timeStamp);
+        // });
+        // data = latestArr;
         //取得全部文章
         let posts = [];
         for (let i = 0; i < data.length; i++) {
@@ -212,7 +226,6 @@ export default {
 
 
 <style lang="scss" scoped>
-
 ul {
   padding: 1rem;
   list-style: none;
@@ -227,7 +240,7 @@ ul {
     display: flex;
 
     .like-btn {
-      -webkit-appearance:none;
+      -webkit-appearance: none;
       width: 44px;
       height: 44px;
       border: 2px solid black;

@@ -103,6 +103,19 @@ export default {
     };
   },
   methods: {
+     bubble(ary) {
+      for (var i = 0; i < ary.length; i++) {
+        for (var j = 0; j < ary.length - i - 1; j++) {
+          if (ary[j].timeStamp < ary[j + 1].timeStamp) {
+            var temp = ary[j];
+            ary[j] = ary[j + 1];
+            ary[j + 1] = temp;
+          }
+        }
+      }
+      console.log('bubbled');
+      return ary;
+    },
     //2020/2/18 下午 7:49:36 -> 1582026576
     convertTime(item) {
       let rawStr = item.updateTime;
@@ -128,14 +141,7 @@ export default {
       let time1 = Date.parse(converted);
       return time1;
     },
-    getLatest() {
-      const vm = this;
-      let latestArr = vm.data.sort((a, b) => {
-        //降冪
-        return b.timeStamp - a.timeStamp;
-      });
-      vm.data = latestArr;
-    },
+
     getAllWriters() {
       const vm = this;
       let arr = [];
@@ -229,7 +235,7 @@ export default {
             isLiked: false
           };
         });
-        vm.getLatest();
+        vm.bubble(vm.data);
 
         vm.getAllWriters();
         vm.displayPosts = vm.allWriters;
