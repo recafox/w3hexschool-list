@@ -10,7 +10,7 @@
       ref="authorList"
     ></LatestAuthor>
 
-    <Bookmark :likePost="likePost" @cancelThis="cancelThat" />
+    <Bookmark v-if='likePost.length !==0' :likePost="likePost" @cancelThis="cancelThat" />
     <Footer />
   </div>
 </template>
@@ -52,58 +52,54 @@ export default {
     };
   },
   methods: {
-    bubble(ary) {
-  for(var i=0;i<ary.length;i++) {
-    for(var j=0;j<ary.length - i - 1;j++) {
-      if (ary[j].timeStamp < ary[j+1].timeStamp) {
-        var temp = ary[j];
-        ary[j] = ary[j+1];
-        ary[j+1] = temp;
-      }
-    }
-  }
-  
-  return ary
-},
-    //2020/2/18 下午 7:49:36 -> 1582026576
-    convertTime(item) {
-      let rawStr = item.updateTime;
-      let str1 = rawStr.replace(new RegExp("/", "g"), "-");
-      let str2 = str1.split(" ");
-      //console.log(str2); //"2020-2-15", "下午", "7:44:01"
-      let str3 = str2[2].split(":");
-      str2.splice(2, 1, str3);
-      if (str2[1] === "下午" && Number(str2[2][0]) !== 12) {
-        let num = Number(str2[2][0]) + 12;
-        str2[2][0] = String(num);
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      } else if (str2[1] === "下午" && Number(str2[2][0]) === 12) {
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      } else if (str2[1] === "上午") {
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      }
-      let strTime = str2.join(" ");
-      let converted = new Date(strTime);
-      let time1 = Date.parse(converted);
+    
 
-      return time1;
+    getMillesecond(time) {
+      let millisecond;
+      let allTime = time.split(' ');
+      let found = allTime[2].indexOf('12');
+   
+      if (allTime.includes('上午')) {
+        let newTime = allTime.join(' ');
+        const timeString = newTime.replace("上午", "");
+        millisecond = new Date(timeString).getTime();
+      }else if(allTime.includes('下午') && found === 0){
+        let newTime = allTime.join(' ');
+        const timeString = newTime.replace("下午", "");
+        millisecond = new Date(timeString).getTime();
+      }   
+      else if (time.indexOf("下午") > -1 && found !==0) {
+        const timeString = time.replace("下午", "");
+        millisecond = new Date(timeString).getTime() + 12 * 60 * 60 * 1000;
+      }
+
+      return millisecond;
     },
 
-
-
-    getLatest() {
+    setToStorage() {
       const vm = this;
-      vm.bubble(vm.data);
-      
-      // vm.data.sort((a, b) => {
-      //   //降冪
-      //   return parseFloat(b.timeStamp) - parseFloat(a.timeStamp);
-      // });
-      //console.log(latestArr);
+      let str = JSON.stringify(vm.likePost);
+      localStorage.setItem("likePost", str);
     },
+
+    initPosts() {
+      const vm = this;
+      vm.data.forEach(item => {
+        item.blogList.forEach(item => {
+          item.marked = false;
+        });
+        item.likedAuthor = false;
+        if(item.name === null){
+          item.name = '無名氏';
+        }
+      });
+      vm.data = vm.data.sort((a, b) => {
+        const aTime = vm.getMillesecond(a.updateTime);
+        const bTime = vm.getMillesecond(b.updateTime);
+        return aTime > bTime ? -1 : 1;
+      });
+    },
+
     //加入收藏
     addToFav(obj) {
       const vm = this;
@@ -115,7 +111,6 @@ export default {
             vm.data[i].blogList[y].marked === false
           ) {
             vm.data[i].blogList[y].marked = true;
-            console.log(vm.data[i].blogList[y] + "is liked");
           } else if (
             vm.data[i].blogList[y].title === obj.title &&
             vm.data[i].blogList[y].marked === true
@@ -140,12 +135,10 @@ export default {
       }
 
       vm.likePost = arr;
-
-      let str = JSON.stringify(vm.likePost);
-      localStorage.setItem("likePost", str);
+      vm.setToStorage();
     },
     //假設之前有收藏過文章在localstorage, 在下次打開網頁載資料時將狀態同步
-    getLikePost() {
+    syncLikePosts() {
       const vm = this;
       if (vm.likePost.length !== 0) {
         vm.data.forEach(item => {
@@ -164,7 +157,6 @@ export default {
     //移除收藏
     cancelThat(item) {
       const vm = this;
-      //console.log('cancel that', item);
       for (let i = 0; i < vm.data.length; i++) {
         for (let y = 0; y < vm.data[i].blogList.length; y++) {
           if (vm.data[i].blogList[y].title === item.title) {
@@ -187,12 +179,10 @@ export default {
         });
       });
       vm.likePost = arr;
+      vm.setToStorage();
+    },
 
-      let str = JSON.stringify(vm.likePost);
-      localStorage.setItem("likePost", str);
-    }
   },
-  computed: {},
   mounted() {
     const vm = this;
     const url =
@@ -203,21 +193,9 @@ export default {
       })
       .then(data => {
         vm.data = data;
-        //console.log(data);
-        vm.data.forEach(item => {
-          item.timeStamp = vm.convertTime(item);
-          item.blogList.forEach(item => {
-            item.marked = false;
-          });
-          item.author = {
-            name: item.name,
-            isLiked: false
-          };
-        });
-        vm.getLatest();
-        vm.getLikePost();
+        vm.initPosts();
+        vm.syncLikePosts();
       });
-    //localStorage.clear();
   }
 };
 </script>

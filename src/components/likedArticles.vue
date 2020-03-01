@@ -38,45 +38,42 @@ export default {
   data(){
     return{
       likePost: JSON.parse(localStorage.getItem("likePost")) || [],
-      pageSize: 10, //每頁顯示20條
+      pageSize: 10, //每頁顯示10條
       currentPage: 1, //目前頁碼
       totalPages: 0, //全部頁數
       displayPosts: [],
     }
   },
   methods:{
-    //移除
+
     remove(item){
       const vm = this;
-      for(let i=0; i<vm.likedPost.length; i++){
-        if(item.title === vm.likedPost[i].title){
-          vm.likedPost.splice(i, 1);
+      for(let i=0; i<vm.likePost.length; i++){
+        if(item.title === vm.likePost[i].title){
+          vm.likePost.splice(i, 1);
         }
       };
-      let storage = JSON.stringify(vm.likedPost);
+      let storage = JSON.stringify(vm.likePost);
       localStorage.setItem('likePost', storage);
     },
    
-
       go(page) {
-      //console.log(page);
       this.currentPage = page;
     },
+    countTotalPages(display){
+      const vm = this;
+      vm.displayPosts = display;
+      vm.totalPages = Math.ceil(display.length / vm.pageSize);
+      
+    }
     
   },
   mounted(){
-    console.log('like mounted');
     const vm = this;
-    let str = JSON.parse(localStorage.getItem('likePost'));
-    vm.likedPost = str;
-    //計算總頁數
-    vm.displayPosts = vm.likedPost;
-    vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
+    vm.countTotalPages(vm.likePost);
 
   },
-  updated(){
-    console.log('like updated');
-  },
+
     computed: {
     showCurrentPage: function() {
       /*currentPage = 1 1~12 
@@ -103,6 +100,7 @@ export default {
 
 
 <style lang="scss" scoped>
+
 ul {
   padding: 1rem;
   list-style: none;

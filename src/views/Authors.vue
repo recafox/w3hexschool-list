@@ -10,17 +10,19 @@
           <p>{{item.updateTime}}</p>
           <div class="d-flex mt-auto ml-auto">
             <button class="author-btn open" @click="enterPersonal(item)">
-              <i style='color:black' v-if="fullWidth<415" class="fas fa-clipboard-list" ></i>
+              <i style="color:black" v-if="fullWidth<415" class="fas fa-clipboard-list"></i>
               <span v-else>
-                文章<br />列表
-              </span> 
+                文章
+                <br />列表
+              </span>
             </button>
             <button class="author-btn link">
               <a :href="item.blogUrl" target="_blank">
-                 <i v-if="fullWidth<415" class="fas fa-user-alt"></i>
+                <i v-if="fullWidth<415" class="fas fa-user-alt"></i>
                 <span v-else>
-                  前往<br />網站
-                </span>     
+                  前往
+                  <br />網站
+                </span>
               </a>
             </button>
           </div>
@@ -57,7 +59,12 @@
               <tbody>
                 <tr v-for="(item,index) in tempAuthor.blogList" :key="index">
                   <td>
-                    <a class='modal-link' style='color:black' :href="item.url" target="_blank">{{item.title}}</a>
+                    <a
+                      class="modal-link"
+                      style="color:black"
+                      :href="item.url"
+                      target="_blank"
+                    >{{item.title}}</a>
                   </td>
                 </tr>
               </tbody>
@@ -92,78 +99,74 @@ export default {
   data() {
     return {
       data: [],
-      allWriters: [],
       pageSize: 12, //每頁顯示20條
       currentPage: 1, //目前頁碼
       totalPages: 0, //全部頁數
       filterText: "",
       displayPosts: [],
       tempAuthor: {},
-      fullWidth:null,
+      fullWidth: null
     };
   },
   methods: {
-     bubble(ary) {
-      for (var i = 0; i < ary.length; i++) {
-        for (var j = 0; j < ary.length - i - 1; j++) {
-          if (ary[j].timeStamp < ary[j + 1].timeStamp) {
-            var temp = ary[j];
-            ary[j] = ary[j + 1];
-            ary[j + 1] = temp;
-          }
-        }
+ 
+      getMillesecond(time) {
+      let millisecond;
+      let allTime = time.split(' ');
+      let found = allTime[2].indexOf('12');
+   
+      if (allTime.includes('上午')) {
+        let newTime = allTime.join(' ');
+        const timeString = newTime.replace("上午", "");
+        millisecond = new Date(timeString).getTime();
+      }else if(allTime.includes('下午') && found === 0){
+        let newTime = allTime.join(' ');
+        const timeString = newTime.replace("下午", "");
+        millisecond = new Date(timeString).getTime();
+      }   
+      else if (time.indexOf("下午") > -1 && found !==0) {
+        const timeString = time.replace("下午", "");
+        millisecond = new Date(timeString).getTime() + 12 * 60 * 60 * 1000;
       }
-      console.log('bubbled');
-      return ary;
-    },
-    //2020/2/18 下午 7:49:36 -> 1582026576
-    convertTime(item) {
-      let rawStr = item.updateTime;
-      let str1 = rawStr.replace(new RegExp("/", "g"), "-");
-      let str2 = str1.split(" ");
-      //console.log(str2); //"2020-2-15", "下午", "7:44:01"
-      let str3 = str2[2].split(":");
-      str2.splice(2, 1, str3);
-      if (str2[1] === "下午" && Number(str2[2][0]) !== 12) {
-        let num = Number(str2[2][0]) + 12;
-        str2[2][0] = String(num);
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      } else if (str2[1] === "下午" && Number(str2[2][0]) === 12) {
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      } else if (str2[1] === "上午") {
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      }
-      let strTime = str2.join(" ");
-      let converted = new Date(strTime);
-      let time1 = Date.parse(converted);
-      return time1;
+
+      return millisecond;
     },
 
-    getAllWriters() {
+    getIndex() {
       const vm = this;
-      let arr = [];
+      for (let i = 0; i < vm.data.length; i++) {
+        vm.data[i].index = i + 1;
+      }   
+    },
+
+    initData(){
+      const vm = this;
       vm.data.forEach(item => {
-        let obj = {
-          name: item.name,
-          blogList: item.blogList,
-          blogUrl: item.blogUrl,
-          updateTime: item.updateTime,
-          timeStamp: item.timeStamp
-        };
-        arr.push(obj);
-      });
-      for (let i = 0; i < arr.length; i++) {
-        arr[i].index = i + 1;
-      }
-      vm.allWriters = arr;
+          item.blogList.forEach(item => {
+            item.marked = false;
+          });
+          item.likedAuthor = false;
+          if(item.name === null){
+            item.name = '無名氏';
+          }
+        });
+
+        vm.data = vm.data.sort((a, b) => {
+          const aTime = vm.getMillesecond(a.updateTime);
+          const bTime = vm.getMillesecond(b.updateTime);
+          return aTime > bTime ? -1 : 1;
+        });
+        vm.getIndex();
+        vm.countTotalPages(vm.data);
     },
 
     go(page) {
-      //console.log(page);
       this.currentPage = page;
+    },
+    countTotalPages(display){
+      const vm = this;
+      vm.displayPosts = display;
+      vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
     },
     //關鍵字篩選
     filter(text) {
@@ -172,19 +175,19 @@ export default {
       if (vm.filterText != "") {
         let arr = [];
 
-        vm.allWriters.forEach(item => {
-          if (item.name !== null) {
-            if (item.name.includes(vm.filterText)) {
+        vm.data.forEach(item => {
+       if (item.name !== null) {
+            const name = item.name.toUpperCase();
+            const filterUpper = vm.filterText.toUpperCase();
+            if (name.includes(filterUpper)) {
               arr.push(item);
             }
           }
         });
-        vm.displayPosts = arr;
         //重新計算頁數
-        vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
+        vm.countTotalPages(arr);
       } else if (vm.filterText === "") {
-        vm.displayPosts = vm.allWriters;
-        vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
+        vm.countTotalPages(vm.data);
       }
     },
     enterPersonal(item) {
@@ -224,24 +227,10 @@ export default {
       })
       .then(data => {
         vm.data = data;
-        //console.log('data'+ data);
-        vm.data.forEach(item => {
-          item.timeStamp = vm.convertTime(item);
-          item.blogList.forEach(item => {
-            item.marked = false;
-          });
-          item.author = {
-            name: item.name,
-            isLiked: false
-          };
-        });
-        vm.bubble(vm.data);
+        vm.initData();
 
-        vm.getAllWriters();
-        vm.displayPosts = vm.allWriters;
-        vm.totalPages = Math.ceil(vm.allWriters.length / vm.pageSize);
+       
       });
-    // localStorage.clear();
     //響應式:監控目前螢幕寬度
     vm.fullWidth = window.innerWidth;
     window.onresize = () => {
@@ -276,9 +265,9 @@ a {
       padding: 0.5rem;
       border-radius: 0 1.5rem 0 0;
       color: white;
-      
+
       .author-btn {
-        -webkit-appearance:none;
+        -webkit-appearance: none;
         border: none;
         padding: 0 1rem;
         border-radius: 0.5rem;
@@ -312,18 +301,16 @@ a {
       p {
         font-size: 0.7rem;
       }
-      
     }
   }
-
 }
 
 @media (max-width: 415px) {
   .outer-container ul li {
     width: 47%;
-    .author-btn{
-      -webkit-appearance:none;
-      padding:0.5rem 1rem;
+    .author-btn {
+      padding: 0.5rem 1rem;
+
     }
   }
 }

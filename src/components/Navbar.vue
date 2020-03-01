@@ -142,15 +142,14 @@ button:focus{
       width: 0%;
       position: absolute;
       top: 39px;
+      left:calc(100%*0.1);
       height: 10px;
       display: block;
-      transform:translateX(-100%);
       border-bottom: 0.5rem solid #69F0AE;
-      transition:all 0.2s ease;
+      transition:width 0.2s ease;
     }
     .nav-link:hover::after{
        width:80%;
-       transform:translateX(-5%);
     }
   }
 }

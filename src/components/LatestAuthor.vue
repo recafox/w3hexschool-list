@@ -9,7 +9,7 @@
       </div>
       <div class="name-container d-flex">
         <ul>
-          <li class="author-box" v-for="item in latest.slice(0, 10)" :key="item.timeStamp">
+          <li class="author-box" v-for="item in latest.slice(0, 12)" :key="item.timeStamp">
             <!-- 限定渲染數量 -->
             <div>{{item.name}}</div>
             <button class="name-btn" @click.prevent="openModal(item)">
@@ -20,7 +20,7 @@
       </div>
       <div v-if="fullWidth<415" class="name-container d-flex">
         <ul>
-          <li class="author-box" v-for="item in latest.slice(11, 21)" :key="item.timeStamp">
+          <li class="author-box" v-for="item in latest.slice(13, 25)" :key="item.timeStamp">
             <!-- 限定渲染數量 -->
             <div>{{item.name}}</div>
             <button class="name-btn" @click.prevent="openModal(item)">

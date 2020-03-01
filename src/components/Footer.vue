@@ -1,6 +1,6 @@
 <template>
   <div class='footer mt-4 d-flex p-3'>
-    <a href='#'><i class='fab fa-github mr-1'></i>Rita Ho</a>
+    <a href='https://github.com/recafox/w3hexschool-list'><i class='fab fa-github mr-1'></i>Rita Ho</a>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ export default {
 .footer{
   height:75px;
   background-color: black;
-  width:100vw;
+  width:100%;
 
   a{
     text-decoration: none;

@@ -1,19 +1,16 @@
-# article-ist
+# Hex post - 2020年六角學院寫文全馬挑戰賽文章收集站
 
-## Project setup
-```
-npm install
-```
+### 目前功能有以下
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+1. 可觀看最新更新文章/作者
+2. 可收藏文章
+3. 可搜尋文章標題/作者 (不限大小寫)
+4. 支援響應式
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### 使用技術
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+1. api串接
+2. local storage
+3. Bootstrap
+4. Sass
+5. Vue & Vue Router

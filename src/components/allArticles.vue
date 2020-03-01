@@ -45,44 +45,54 @@ export default {
     };
   },
   methods: {
-    bubble(ary) {
-      for (var i = 0; i < ary.length; i++) {
-        for (var j = 0; j < ary.length - i - 1; j++) {
-          if (ary[j].timeStamp < ary[j + 1].timeStamp) {
-            var temp = ary[j];
-            ary[j] = ary[j + 1];
-            ary[j + 1] = temp;
+    getAllPosts(data){
+      const vm = this;
+        let posts = [];
+        for (let i = 0; i < data.length; i++) {
+          for (let y = 0; y < data[i].blogList.length; y++) {
+            let obj = {
+              name: data[i].name,
+              posts: data[i].blogList[y]
+            };
+            posts.push(obj);
           }
         }
-      }
+        for (let i = 0; i < posts.length; i++) {
+          posts[i].index = i + 1;
+        }
+        vm.allPosts = posts;
+    },
+    initData(data){
+      const vm = this;
+        data.forEach(item => {
+          item.blogList.forEach(item => {
+            item.marked = false;
+          });
+          item.likedAuthor = false;
+          if(item.name === null){
+            item.name = '無名氏';
+          }
+        });
+        //時間新->舊排序
+        
+        data = data.sort((a,b)=>{
+          const aTime = vm.getMillesecond(a.updateTime);
+          const bTime = vm.getMillesecond(b.updateTime);
+          return aTime > bTime? -1:1;
+        })
+    },
+    setToStorage() {
+      const vm = this;
+      let str = JSON.stringify(vm.likePost);
+      localStorage.setItem("likePost", str);
+    },
 
-      return ary;
+    countTotalPages(display){
+      const vm = this;
+      vm.displayPosts = display;
+      vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
     },
-    //2020/2/18 下午 7:49:36 -> 1582026576
-    convertTime(item) {
-      let rawStr = item.updateTime;
-      let str1 = rawStr.replace(new RegExp("/", "g"), "-");
-      let str2 = str1.split(" ");
-      //console.log(str2); //"2020-2-15", "下午", "7:44:01"
-      let str3 = str2[2].split(":");
-      str2.splice(2, 1, str3);
-      if (str2[1] === "下午" && Number(str2[2][0]) !== 12) {
-        let num = Number(str2[2][0]) + 12;
-        str2[2][0] = String(num);
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      } else if (str2[1] === "下午" && Number(str2[2][0]) === 12) {
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      } else if (str2[1] === "上午") {
-        let time = str2[2].join(":");
-        str2.splice(1, 2, time);
-      }
-      let strTime = str2.join(" ");
-      let converted = new Date(strTime);
-      let time1 = Date.parse(converted);
-      return time1;
-    },
+ 
     //翻頁
     go(page) {
       //console.log(page);
@@ -100,13 +110,11 @@ export default {
             arr.push(item);
           }
         });
-        //console.log(arr);
-        vm.displayPosts = arr;
+        
         //重新計算頁數
-        vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
+        vm.countTotalPages(arr);
       } else if (vm.filterText === "") {
-        vm.displayPosts = vm.allPosts;
-        vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
+        vm.countTotalPages(vm.allPosts);
       }
     },
     like(item) {
@@ -135,9 +143,8 @@ export default {
           }
         }
       });
-      let arr = JSON.stringify(vm.likePost);
-      localStorage.setItem("likePost", arr);
-      //vm.syncLike();
+      vm.setToStorage();
+      
     },
     syncLike() {
       const vm = this;
@@ -148,7 +155,29 @@ export default {
           }
         }
       }
-    }
+    },
+    getMillesecond(time) {
+      let millisecond;
+      let allTime = time.split(' ');
+      let found = allTime[2].indexOf('12');
+   
+      if (allTime.includes('上午')) {
+        let newTime = allTime.join(' ');
+        const timeString = newTime.replace("上午", "");
+        millisecond = new Date(timeString).getTime();
+      }else if(allTime.includes('下午') && found === 0){
+        //中午
+        let newTime = allTime.join(' ');
+        const timeString = newTime.replace("下午", "");
+        millisecond = new Date(timeString).getTime();
+      }   
+      else if (time.indexOf("下午") > -1 && found !==0) {
+        const timeString = time.replace("下午", "");
+        millisecond = new Date(timeString).getTime() + 12 * 60 * 60 * 1000;
+      }
+
+      return millisecond;
+    },
   },
   computed: {
     showCurrentPage: function() {
@@ -180,44 +209,12 @@ export default {
       })
       .then(data => {
         //設定資料初始狀態
-        data.forEach(item => {
-          item.timeStamp = vm.convertTime(item);
-          item.blogList.forEach(item => {
-            item.marked = false;
-          });
-          item.author = {
-            name: item.name,
-            isLiked: false
-          };
-        });
-        //時間新->舊排序
-        vm.bubble(data);
-        // let latestArr = data.sort((a, b) => {
-        //   //降冪
-        //   return parseInt(b.timeStamp) - parseInt(a.timeStamp);
-        // });
-        // data = latestArr;
-        //取得全部文章
-        let posts = [];
-        for (let i = 0; i < data.length; i++) {
-          for (let y = 0; y < data[i].blogList.length; y++) {
-            let obj = {
-              name: data[i].name,
-              posts: data[i].blogList[y]
-            };
-            posts.push(obj);
-          }
-        }
-        for (let i = 0; i < posts.length; i++) {
-          posts[i].index = i + 1;
-        }
-        vm.allPosts = posts;
+        vm.initData(data);   
+        vm.getAllPosts(data);
         vm.syncLike();
         //計算頁數
-        vm.displayPosts = vm.allPosts;
-        vm.totalPages = Math.ceil(vm.displayPosts.length / vm.pageSize);
+        vm.countTotalPages(vm.allPosts);
 
-        // localStorage.clear();
       });
   }
 };
@@ -226,6 +223,9 @@ export default {
 
 
 <style lang="scss" scoped>
+input, select, button{
+  -webkit-appearance: none;
+}
 ul {
   padding: 1rem;
   list-style: none;
@@ -240,13 +240,12 @@ ul {
     display: flex;
 
     .like-btn {
-      -webkit-appearance: none;
+      
       width: 44px;
       height: 44px;
       border: 2px solid black;
       font-size: 24px;
       border-radius: 0.25rem;
-      padding: 0.5;
       background: white;
     }
 
