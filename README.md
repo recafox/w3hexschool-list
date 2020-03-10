@@ -1,5 +1,7 @@
 # Hex post - 2020年六角學院寫文全馬挑戰賽文章收集站
 
+[demo](https://recafox.github.io/w3hexschool-list/)
+
 ### 目前功能有以下
 
 1. 可觀看最新更新文章/作者
