@@ -17,4 +17,4 @@
 2. local storage
 3. Bootstrap
 4. Sass
-5. Vue & Vue Router
+5. Vue & Vue Router & Vuex(2020-05-14更新)
